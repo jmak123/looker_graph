@@ -1,0 +1,22 @@
+{
+  "name": "looker_graph",
+  "version": "1.0.0",
+  "description": "force directed graph for snowplow event flow viz",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jmak123/looker_graph.git"
+  },
+  "author": "jmak",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jmak123/looker_graph/issues"
+  },
+  "homepage": "https://github.com/jmak123/looker_graph#readme",
+  "dependencies": {
+    "d3": "^5.7.0"
+  }
+}
