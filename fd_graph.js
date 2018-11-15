@@ -6,7 +6,8 @@ var svg = d3.select("svg"),
 
 nodes = d3.csv('sp_event.csv', function(error, links){
 
-    nodes = new Set(links.map(function(d){return(d.source)}));
+    uniq_nodes = new Set(links.map(function(d){return({'name' : d.source})}));
+    nodes = Array.from(uniq_nodes)
     console.log(nodes)
 
     var simulation = d3.forceSimulation().nodes(nodes);	
