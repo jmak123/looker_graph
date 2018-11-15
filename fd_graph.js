@@ -1,133 +1,123 @@
 var svg = d3.select("svg"),
     width = +svg.attr("width"),
-    height = +svg.attr("height"), 
-    nodes;
+    height = +svg.attr("height");
 
+svg.append('defs').append('marker')
+    .attrs({'id':'arrowhead',
+        'viewBox':'-0 -5 10 10',
+        'refX':13,
+        'refY':0,
+        'orient':'auto',
+        'markerWidth':4,
+        'markerHeight':4,
+        'xoverflow':'visible'})
+    .append('svg:path')
+    .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
+    .attr('fill', '#999')
+    .style('stroke','none');
 
-nodes = d3.csv('sp_event.csv', function(error, links){
+var div = d3.select("svg").append("div")	
+    .attr("class", "tooltip")				
+    .style("opacity", 0);
 
-    uniq_nodes = new Set(links.map(function(d){return({'name' : d.source})}));
-    nodes = Array.from(uniq_nodes)
+d3.csv('sp_event.csv', function(error, data_raw){
+
+    var data = []
+    data_raw.forEach(function(d){
+        if (d.source != d.target) {
+            data.push(d)
+        }
+    })
+
+    var all_nodes = data.map(function(d){return(d.source)})
+        .concat(data.map(function(d){return(d.target)}))
+    var uniq_nodes = new Set(all_nodes);
+    var nodes = Array.from(uniq_nodes)
+    nodes = nodes.map(function(d){return{'id':d}})
+
+    var links = data
     console.log(nodes)
+    console.log(links)
 
-    var simulation = d3.forceSimulation().nodes(nodes);	
+    var simulation = d3.forceSimulation()
+        .force("link", d3.forceLink().id(function (d) {return d.id;}))
+        .force("charge", d3.forceManyBody().strength(-500))
+        .force("center", d3.forceCenter(width/2, height/2))
+        .force('collide', d3.forceCollide().strength(1).radius(50))
 
-    simulation
-    .force("charge_force", d3.forceManyBody())
-    .force("center_force", d3.forceCenter(width / 2, height / 2));
-
-    var node = svg.append("g")
-        .attr("class", "nodes")
-        .selectAll("circle")
-        .data(nodes)
+    var link = svg.append("g")
+        .attr("class", "links")
+        .selectAll("line")
+        .data(links)
         .enter()
-        .append("circle")
+        .append("line")
+        .attr("stroke-width", 2)
+        .attr('marker-end','url(#arrowhead)');
+
+    node = svg.selectAll(".node")
+    .data(nodes)
+    .enter()
+    .append("g")
+    .attr("class", "node")
+    .call(d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended)
+    );
+
+    node.append("circle")
         .attr("r", 5)
-        .attr("fill", "red");  
+        .style("fill", 'red')
+        .on("mouseover", function(d) {		
+            div.transition()		
+                .duration(200)		
+                .style("opacity", .9);		
+            div.text(d.id)	
+                .style("left", (d3.event.pageX) + "px")		
+                .style("top", (d3.event.pageY - 28) + "px");	
+        })					
+        .on("mouseout", function(d) {		
+            div.transition()		
+                .duration(500)		
+                .style("opacity", 0);	
+        });
 
-        simulation.on("tick", tickActions );
+    node.append("title")
+        .text(function (d) {return d.id;});
 
-        function tickActions() {
-            //update circle positions each tick of the simulation 
-            node
-                .attr("cx", function(d) { return d.x; })
-                .attr("cy", function(d) { return d.y; });
+    node.append("text")
+        .attr("dy", -3)
+        .text(function (d) {return d.id});
+
+    simulation.nodes(nodes).on("tick", tickActions );
+    simulation.force("link").links(links);
+
+    function tickActions() {
+        //update circle positions each tick of the simulation 
+        node
+        .attr("transform", function (d) {return "translate(" + d.x + ", " + d.y + ")";});
+
+        link
+        .attr("x1", function (d) {return d.source.x;})
+        .attr("y1", function (d) {return d.source.y;})
+        .attr("x2", function (d) {return d.target.x;})
+        .attr("y2", function (d) {return d.target.y;});
+    }      
         
-          }                    
-})
-
-
-
-
+        function dragstarted(d) {
+        if (!d3.event.active) simulation.alphaTarget(0.3).restart()
+        d.fx = d.x;
+        d.fy = d.y;
+    }
     
-// var nodes_data =  [
-//     {"name": "Travis", "sex": "M"},
-//     {"name": "Rake", "sex": "M"},
-//     {"name": "Diana", "sex": "F"},
-//     {"name": "Rachel", "sex": "F"},
-//     {"name": "Shawn", "sex": "M"},
-//     {"name": "Emerald", "sex": "F"}
-//     ]
-
-
-
-// //set up the simulation 
-// //nodes only for now 
-// var simulation = d3.forceSimulation()
-// 					//add nodes
-// 					.nodes(nodes_data);	
-                    
-// //add forces
-// //we're going to add a charge to each node 
-// //also going to add a centering force
-// simulation
-//     .force("charge_force", d3.forceManyBody())
-//     .force("center_force", d3.forceCenter(width / 2, height / 2));
-
-
-// //draw circles for the nodes 
-// var node = svg.append("g")
-//         .attr("class", "nodes")
-//         .selectAll("circle")
-//         .data(nodes_data)
-//         .enter()
-//         .append("circle")
-//         .attr("r", 5)
-//         .attr("fill", "red");  
-
-
-        
-// //add tick instructions: 
-// simulation.on("tick", tickActions );
-
-
-//Time for the links 
-
-// //Create links data 
-// var links_data = [
-// 	{"source": "Travis", "target": "Rake"},
-//     {"source": "Diana", "target": "Rake"},
-//     {"source": "Diana", "target": "Rachel"},
-//     {"source": "Rachel", "target": "Rake"},
-//     {"source": "Rachel", "target": "Shawn"},
-//     {"source": "Emerald", "target": "Rachel"}
-// ]
-
-
-// //Create the link force 
-// //We need the id accessor to use named sources and targets 
-
-// var link_force =  d3.forceLink(links_data)
-//                         .id(function(d) { return d.name; })
-
-// //Add a links force to the simulation
-// //Specify links  in d3.forceLink argument   
-
-
-// simulation.force("links",link_force)
-
-// //draw lines for the links 
-// var link = svg.append("g")
-//       .attr("class", "links")
-//     .selectAll("line")
-//     .data(links_data)
-//     .enter().append("line")
-//       .attr("stroke-width", 2);        
-                
-                
-// function tickActions() {
-//     //update circle positions each tick of the simulation 
-//     node
-//         .attr("cx", function(d) { return d.x; })
-//         .attr("cy", function(d) { return d.y; });
-        
-//     //update link positions 
-//     //simply tells one end of the line to follow one node around
-//     //and the other end of the line to follow the other node around
-//     // link
-//     //     .attr("x1", function(d) { return d.source.x; })
-//     //     .attr("y1", function(d) { return d.source.y; })
-//     //     .attr("x2", function(d) { return d.target.x; })
-//     //     .attr("y2", function(d) { return d.target.y; });
-
-//   }                    
+    function dragged(d) {
+        d.fx = d3.event.x;
+        d.fy = d3.event.y;
+    }
+    
+    function dragended(d) {
+        if (!d3.event.active) simulation.alphaTarget(0);
+        d.fx = undefined;
+        d.fy = undefined;
+    }
+})
