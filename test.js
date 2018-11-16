@@ -54,20 +54,20 @@ simulation.on("tick", tickActions );
 
 // add arrows
 var arrow = svg.append("defs").selectAll("marker")
-  .data(["line-end"])
-  .enter().append("marker")
-  .attr("id", "line-end")
-  .attr("viewBox", "0 -5 10 10")
-  .attr("refX", 0)
-  .attr("refY", 0)
-  .attr("markerUnits", "userSpaceOnUse")
-  .attr("markerWidth", 12)
-  .attr("markerHeight", 12)
-  .attr("orient", "auto")
-  .append("path")
-  .attr("d", "M0,-5L10,0L0,5")
-  .attr('fill', "#333")
-  ;
+    .data(["line-end"])
+    .enter().append("marker")
+    .attr("id", "line-end")
+    .attr("viewBox", "0 -5 10 10")
+    .attr("refX", 0)
+    .attr("refY", 0)
+    .attr("markerUnits", "userSpaceOnUse")
+    .attr("markerWidth", 12)
+    .attr("markerHeight", 12)
+    .attr("orient", "auto")
+    .append("path")
+    .attr("d", "M0,-5L10,0L0,5")
+    .attr('fill', "#333")
+    ;
 
 //add encompassing group for the zoom 
 var g = svg.append("g")
@@ -110,10 +110,10 @@ var text = g.append("g")
 
 //add drag capabilities  
 var drag_handler = d3.drag()
-  .on("start", drag_start)
-  .on("drag", drag_drag)
-  .on("end", drag_end); 
-  
+    .on("start", drag_start)
+    .on("drag", drag_drag)
+    .on("end", drag_end); 
+
 drag_handler(node);
 
 //add zoom capabilities 
@@ -127,21 +127,21 @@ zoom_handler(svg);
 //Drag functions 
 //d is the node 
 function drag_start(d) {
- if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-    d.fx = d.x;
-    d.fy = d.y;
+    if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
 }
 
 //make sure you can't drag the circle outside the box
 function drag_drag(d) {
-  d.fx = d3.event.x;
-  d.fy = d3.event.y;
+    d.fx = d3.event.x;
+    d.fy = d3.event.y;
 }
 
 function drag_end(d) {
-  if (!d3.event.active) simulation.alphaTarget(0);
-  d.fx = null;
-  d.fy = null;
+    if (!d3.event.active) simulation.alphaTarget(0);
+    d.fx = null;
+    d.fy = null;
 }
 
 //Zoom functions 
@@ -166,26 +166,26 @@ function tickActions() {
 
 //update link position
 function positionLink1(d) {
-  var dx = d.target.x - d.source.x,
-      dy = d.target.y - d.source.y,
-      dr = Math.sqrt(dx * dx + dy * dy);
-  return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+    var dx = d.target.x - d.source.x,
+        dy = d.target.y - d.source.y,
+        dr = Math.sqrt(dx * dx + dy * dy);
+    return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
 }
 
 //update link end position
 function positionLink2(d) {
-  // length of current path
-  var pl = this.getTotalLength(),
-    // radius of circle plus marker head
-    r = nodeSizeScale(d.target.total)+ 10, //16.97 is the "size" of the marker Math.sqrt(12**2 + 12 **2)
-    // position close to where path intercepts circle 
-    m = this.getPointAtLength(pl - r);          
+    // length of current path
+    var pl = this.getTotalLength(),
+        // radius of circle plus marker head
+        r = nodeSizeScale(d.target.total)+ 10, //16.97 is the "size" of the marker Math.sqrt(12**2 + 12 **2)
+        // position close to where path intercepts circle 
+        m = this.getPointAtLength(pl - r);          
 
-  var dx = m.x - d.source.x,
-    dy = m.y - d.source.y,
-    dr = Math.sqrt(dx * dx + dy * dy);
+    var dx = m.x - d.source.x,
+        dy = m.y - d.source.y,
+        dr = Math.sqrt(dx * dx + dy * dy);
 
-  return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + m.x + "," + m.y;
+    return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + m.x + "," + m.y;
 }
 
 
