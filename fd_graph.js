@@ -1,5 +1,6 @@
 // create element
-var svg = d3.select("svg").style('background-color', 'grey'),
+var svg = d3.select("svg")
+        .style('background-color', 'grey'),
     width = +svg.attr("width"),
     height = +svg.attr("height");
 
@@ -52,6 +53,9 @@ d3.csv('sp_event.csv', function(error, data_raw){
         .style('opacity', 0.2);
 
     var g  = svg.append('g')
+        // .attr('width', '80%')
+        // .attr('height', '80%')
+        // .style('background-clor', 'yellow')
         .call(d3.zoom()
             .on("zoom", zoomed));
     
@@ -88,15 +92,20 @@ d3.csv('sp_event.csv', function(error, data_raw){
         );
 
     node.append("circle")
+        .attr('id', function(d){return 'node_' + d.id})
         .attr("r", 5)
         .style("fill", 'red')
+        .on('mouseover', nodemouseover)
+        .on('mouseout', nodemouseout)
 
     node.append("title")
         .text(function (d) {return d.id;});
 
     node.append("text")
-        .attr("dy", -3)
-        .text(function (d) {return d.id});
+        .attr('id', function(d){return 'text_' + d.id})
+        .attr("dy", -7)
+        .text(function (d) {return d.id})
+        .attr('font-size', 12);
 
     // link force interaction with nodes and links
     simulation.nodes(nodes).on("tick", tickActions );
@@ -141,13 +150,14 @@ d3.csv('sp_event.csv', function(error, data_raw){
 
     function mouseover(d){
         d3.select(this)
-        .style('stroke', 'red')
+        .style('stroke', 'green')
         .style("stroke-opacity", 1)
-        .style("stroke-width", 5);
+        .style("stroke-width", 10);
         
         d3.select('#arrow_' + d.source.id + '_' + d.target.id)
-        .style('fill', 'red')
+        .style('fill', 'green')
         .style('opacity' , 1)
+        .style("stroke-width", 10)
 
     };
 
@@ -163,6 +173,22 @@ d3.csv('sp_event.csv', function(error, data_raw){
         d3.select('#arrow_' + d.source.id + '_' + d.target.id)
         .style('fill', 'black')
         .style('opacity', 0.1)
+    };
+
+    function nodemouseover(d){
+        d3.select('#text_' + d.id)
+        .attr('font-size', 25);
+
+        d3.select('#node_' + d.id)
+        .attr('r', 20)
+    }
+
+    function nodemouseout(d){
+        d3.select('#text_' + d.id)
+        .attr('font-size', 12);
+
+        d3.select('#node_' + d.id)
+        .attr('r', 5)
     }
 
     function zoomed(){
