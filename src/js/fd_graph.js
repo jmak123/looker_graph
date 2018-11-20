@@ -18,6 +18,18 @@ var fdg = function() {
             }
         })
 
+        data.forEach(function(d){
+            d.gp = data_raw
+                .filter(function(o){
+                    return (o.source == d.source)
+                })
+                .map(function(o){return o.freq * 1})
+            d.gp_max = Math.max(...d.gp)
+            d.weight = d.freq * 1 / d.gp_max
+            d.is_primary = d.freq * 1 == d.gp_max
+        })
+        console.log(data)
+
         // get unique nodes from links
         var all_nodes = data.map(function(d){return(d.source)})
             .concat(data.map(function(d){return(d.target)}))
@@ -52,7 +64,7 @@ var fdg = function() {
             .style('fill', 'black')
             .style('stroke','none')
             .style('opacity', function(d){
-                if (d.is_primary == 'TRUE') {
+                if (d.is_primary) {
                     return 0.9
                 } else {return 0.05}});
 
@@ -74,7 +86,7 @@ var fdg = function() {
             .style('stroke', 'black')
             .style("stroke-width", 2)
             .style("stroke-opacity", function(d){
-                if (d.is_primary == 'TRUE') {
+                if (d.is_primary) {
                     return 0.9
                 } else {return 0.05}})
             .style('fill', 'none')
@@ -170,7 +182,7 @@ var fdg = function() {
             .style('stroke', 'black')
             .style("stroke-width", 2)
             .style("stroke-opacity", function(d){
-                if (d.is_primary == 'TRUE') {
+                if (d.is_primary) {
                     return 0.9
                 } else {return 0.05}})
 
@@ -188,25 +200,25 @@ var fdg = function() {
 
             link
             .style('stroke', function(o){
-                if (o.source.id == d.id & o.is_primary == 'TRUE') {
+                if (o.source.id == d.id & o.is_primary ) {
                     return 'orange'
-                } else if (o.source.id == d.id & o.is_primary == 'FALSE') {
+                } else if (o.source.id == d.id & !o.is_primary) {
                     return 'blue'
                 } else {
                     return 'black'
                 }
             })
             .style('stroke-width', function(o){
-                if (o.source.id == d.id & o.is_primary == 'TRUE') {
+                if (o.source.id == d.id & o.is_primary) {
                     return 5
                 } else {
                     return 2
                 }
             })
             .style('stroke-opacity', function(o){
-                if (o.source.id == d.id & o.is_primary == 'TRUE') {
+                if (o.source.id == d.id & o.is_primary) {
                     return 0.9
-                } else if (o.source.id == d.id & o.is_primary == 'FALSE') {
+                } else if (o.source.id == d.id & !o.is_primary) {
                     return 0.7
                 } else {
                     return 0.05
@@ -215,18 +227,18 @@ var fdg = function() {
 
             marker
             .style('fill', function(o){
-                if (o.source.id == d.id & o.is_primary == 'TRUE') {
+                if (o.source.id == d.id & o.is_primary) {
                     return 'orange'
-                } else if (o.source.id == d.id & o.is_primary == 'FALSE') {
+                } else if (o.source.id == d.id & !o.is_primary) {
                     return 'blue'
                 } else {
                     return 'black'
                 }
             })
             .style('opacity', function(o){
-                if (o.source.id == d.id & o.is_primary == 'TRUE') {
+                if (o.source.id == d.id & o.is_primary) {
                     return 0.9
-                } else if (o.source.id == d.id & o.is_primary == 'FALSE') {
+                } else if (o.source.id == d.id & !o.is_primary) {
                     return 0.7
                 } else {
                     return 0.05
