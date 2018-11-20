@@ -32,7 +32,7 @@ var fdg = function(container, data_raw) {
             .map(function(o){return o.freq * 1})
         d.gp_max = Math.max(...d.gp)
         d.weight = d.freq * 1 / d.gp_max
-        d.is_primary = d.freq * 1 >= d.gp_max * 0.8
+        d.is_primary = d.freq * 1 >= d.gp_max * 0.75
     })
 
     // get unique nodes from links
