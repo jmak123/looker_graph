@@ -1,3 +1,22 @@
 import {make_graph} from './fd_graph.js';
 
-make_graph()
+looker.plugins.visualizations.add({
+
+	create: function(element, config){
+
+    },
+
+	updateAsync: function(data, element, config, queryResponse, details, doneRendering){
+
+        // var parent = data[0]['var1'].value
+        // var child = data[0]['var2'].value
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+        make_graph(element, data, queryResponse)
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		doneRendering()
+	}
+});
