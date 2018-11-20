@@ -260,7 +260,11 @@ var fdg = function(container, data_raw) {
 
         link
         .style('stroke', 'black')
-        .style('stroke-width', 2)
+        .style("stroke-width", 2)
+        .style("stroke-opacity", function(d){
+            if (d.is_primary) {
+                return 0.9
+            } else {return 0.05}})
 
         marker
         .style('fill', 'black')
