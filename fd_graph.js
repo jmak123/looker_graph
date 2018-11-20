@@ -1,6 +1,6 @@
 // create element
 var svg = d3.select("svg")
-        .style('background-color', 'grey'),
+        .style('background-color', 'white'),
     width = +svg.attr("width"),
     height = +svg.attr("height");
 
@@ -50,7 +50,10 @@ d3.csv('sp_event.csv', function(error, data_raw){
         .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
         .style('fill', 'black')
         .style('stroke','none')
-        .style('opacity', 0.2);
+        .style('opacity', function(d){
+            if (d.is_primary == 'TRUE') {
+                return 0.9
+            } else {return 0.05}});
 
     var g  = svg.append('g')
         // .attr('width', '80%')
@@ -72,7 +75,7 @@ d3.csv('sp_event.csv', function(error, data_raw){
         .style("stroke-opacity", function(d){
             if (d.is_primary == 'TRUE') {
                 return 0.9
-            } else {return 0.1}})
+            } else {return 0.05}})
         .style('fill', 'none')
         .attr('marker-end', function(d) { return 'url(#marker_' + d.source + '_' + d.target +')'})
         .on('mouseover', mouseover)
@@ -168,11 +171,11 @@ d3.csv('sp_event.csv', function(error, data_raw){
         .style("stroke-opacity", function(d){
             if (d.is_primary == 'TRUE') {
                 return 0.9
-            } else {return 0.1}})
+            } else {return 0.05}})
 
         d3.select('#arrow_' + d.source.id + '_' + d.target.id)
         .style('fill', 'black')
-        .style('opacity', 0.1)
+        .style('opacity', 0.05)
     };
 
     function nodemouseover(d){
@@ -181,6 +184,54 @@ d3.csv('sp_event.csv', function(error, data_raw){
 
         d3.select('#node_' + d.id)
         .attr('r', 20)
+
+        link
+        .style('stroke', function(o){
+            if (o.source.id == d.id & o.is_primary == 'TRUE') {
+                return 'orange'
+            } else if (o.source.id == d.id & o.is_primary == 'FALSE') {
+                return 'blue'
+            } else {
+                return 'black'
+            }
+        })
+        .style('stroke-width', function(o){
+            if (o.source.id == d.id & o.is_primary == 'TRUE') {
+                return 5
+            } else {
+                return 2
+            }
+        })
+        .style('stroke-opacity', function(o){
+            if (o.source.id == d.id & o.is_primary == 'TRUE') {
+                return 0.9
+            } else if (o.source.id == d.id & o.is_primary == 'FALSE') {
+                return 0.7
+            } else {
+                return 0.05
+            }
+        });
+
+        marker
+        .style('fill', function(o){
+            if (o.source.id == d.id & o.is_primary == 'TRUE') {
+                return 'orange'
+            } else if (o.source.id == d.id & o.is_primary == 'FALSE') {
+                return 'blue'
+            } else {
+                return 'black'
+            }
+        })
+        .style('opacity', function(o){
+            if (o.source.id == d.id & o.is_primary == 'TRUE') {
+                return 0.9
+            } else if (o.source.id == d.id & o.is_primary == 'FALSE') {
+                return 0.7
+            } else {
+                return 0.05
+            }
+        })
+
     }
 
     function nodemouseout(d){
@@ -189,6 +240,14 @@ d3.csv('sp_event.csv', function(error, data_raw){
 
         d3.select('#node_' + d.id)
         .attr('r', 5)
+
+        link
+        .style('stroke', 'black')
+        .style('stroke-width', 2)
+
+        marker
+        .style('fill', 'black')
+        .style('opacity', 0.05)
     }
 
     function zoomed(){
